@@ -1,20 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from http.server import HTTPServer, CGIHTTPRequestHandler
 import urllib
+import json as jsonlib
 
 class POSTHandler(CGIHTTPRequestHandler):
 
     def do_POST(self):
         length = int(self.headers['Content-Length'])
-        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
-        print(post_data)
-        # You now have a dictionary of the post data
+       	data_string = self.rfile.read(length).decode('utf-8')
         self.send_response(200)
         self.end_headers()
+        
+        data = jsonlib.loads(data_string)
+        
+        print(data['text'])
         return
 
 if __name__ == '__main__':
-        server = HTTPServer(('localhost', 5001), POSTHandler)
+        server = HTTPServer(('0.0.0.0', 5001), POSTHandler)
         print('Starting server...')
         server.serve_forever()	
